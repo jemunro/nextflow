@@ -83,6 +83,8 @@ class ProcessDef extends BindableDef implements IterableDef, ChainableDef {
      */
     private transient ChannelOut output
 
+    private boolean isPartial = false
+
     ProcessDef(BaseScript owner, Closure<BodyDef> body, String name ) {
         this.owner = owner
         this.rawBody = body
@@ -165,18 +167,48 @@ class ProcessDef extends BindableDef implements IterableDef, ChainableDef {
 
     @Override
     Object run(Object[] args) {
-        // initialise process config
-        initialize()
 
-        // get params 
-        final params = ChannelOut.spread(args)
-        // sanity check
-        if( params.size() != declaredInputs.size() )
-            throw new ScriptRuntimeException(missMatchErrMessage(processName, declaredInputs.size(), params.size()))
+        if (! isPartial ) {
+            println "$name: not isPartial"
 
-        // set input channels
-        for( int i=0; i<params.size(); i++ ) {
-            (declaredInputs[i] as BaseInParam).setFrom(params[i])
+            initialize() 
+
+            // get params  
+            final params = ChannelOut.spread(args) 
+            // sanity check 
+            if( params.size() != declaredInputs.size() ) 
+                throw new ScriptRuntimeException(missMatchErrMessage(processName, declaredInputs.size(), params.size())) 
+
+            // set input channels 
+            for( int i=0; i<params.size(); i++ ) { 
+                (declaredInputs[i] as BaseInParam).setFrom(params[i])
+                
+                if (params[i] instanceof InputPlaceholder ) {
+                    isPartial = true
+                }
+            }
+
+            if (isPartial) {
+                return this
+            }
+
+        } else {
+
+            println "$name: isPartial"
+            
+            if( args.size() != 1)
+                throw new ScriptRuntimeException("Wrong number of arguments") 
+
+            for( int i=0; i<declaredInputs.size(); i++ ) { 
+
+                if ((declaredInputs[i] as BaseInParam).fromObject instanceof InputPlaceholder) {
+
+                    InputPlaceholder inputPlaceholder = (declaredInputs[i] as BaseInParam).fromObject as InputPlaceholder
+                    println "inputPlaceholder.name: $inputPlaceholder.name"
+                    println "args[0] is of type ${args[0].class} with value ${args[0]}"
+                    (declaredInputs[i] as BaseInParam).setFrom(inputPlaceholder.getInput(args[0]))
+                }
+            }
         }
 
         // set output channels

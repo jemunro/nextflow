@@ -102,6 +102,7 @@ abstract class BaseScript extends Script implements ExecutionContext {
         binding.setVariable( 'nextflow', NextflowMeta.instance )
         binding.setVariable('launchDir', Paths.get('./').toRealPath())
         binding.setVariable('moduleDir', meta.moduleDir )
+        // binding.setVariable('_', new InputPlaceholder())
     }
 
     protected process( String name, Closure<BodyDef> body ) {
