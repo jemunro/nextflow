@@ -56,11 +56,10 @@ class InputPlaceholder {
     }
 
     Object getInput(Object object) {
+
         if (object instanceof ChannelOut) {
-            println "name: $name"
-            println "index: $index"
-            ChannelOut co = object as ChannelOut
-            return name ? co.getProperty(name) : index ? co[index] : co[0]
+            ChannelOut channelOut = object as ChannelOut
+            return name ? channelOut.getProperty(name) : index ? channelOut[index] : channelOut[0]
         }
         return object
     }

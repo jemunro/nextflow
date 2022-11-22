@@ -204,8 +204,6 @@ class ProcessDef extends BindableDef implements IterableDef, ChainableDef {
                 if ((declaredInputs[i] as BaseInParam).fromObject instanceof InputPlaceholder) {
 
                     InputPlaceholder inputPlaceholder = (declaredInputs[i] as BaseInParam).fromObject as InputPlaceholder
-                    println "inputPlaceholder.name: $inputPlaceholder.name"
-                    println "args[0] is of type ${args[0].class} with value ${args[0]}"
                     (declaredInputs[i] as BaseInParam).setFrom(inputPlaceholder.getInput(args[0]))
                 }
             }

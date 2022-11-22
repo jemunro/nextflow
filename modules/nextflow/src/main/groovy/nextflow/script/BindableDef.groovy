@@ -38,9 +38,6 @@ abstract class BindableDef extends ComponentDef {
 
     Object invoke_a(Object[] args) {
 
-        if( this instanceof ProcessDef ) {
-            println "$name is invoked with $args"
-        }
 
         Object result
 
